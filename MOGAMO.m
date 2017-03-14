@@ -1,7 +1,7 @@
 clear;
 
 % Create test function mappings
-run('test_functions');
+run('./scripts/test_functions');
 
 % The gamultiobj_test_map var contains function handles that run the
 % gamultiobj() function for the test function with the given options

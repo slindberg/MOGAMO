@@ -1,6 +1,6 @@
 clear;
 
-run('../test_functions');
+run('./test_functions');
 
 mm_options = optimoptions('fgoalattain', ...
     'FunctionTolerance', 1e-20, ...
