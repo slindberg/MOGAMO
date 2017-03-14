@@ -1,5 +1,5 @@
 clear;
-
+addpath('../utils');
 run('./test_functions');
 
 mm_options = optimoptions('fgoalattain', ...
@@ -69,10 +69,4 @@ for test_name = keys(test_function_map)
     % Save the data to be loaded later
     filename = strcat('../data/pareto_', test_name{1}, '.mat');
     save(filename, 'pareto_ideal', '-ascii', '-double');
-end
-
-function X_sorted = atan_sort(X_unsorted)
-    X_sorted = [ X_unsorted atan(X_unsorted(:,2)./X_unsorted(:,1)) ];
-    X_sorted = sortrows(X_sorted, 3);
-    X_sorted(:,3) = [];
 end
