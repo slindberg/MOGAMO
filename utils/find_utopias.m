@@ -1,3 +1,5 @@
+clear;
+
 run('../test_functions');
 
 % Find the utopia point for each test problem
