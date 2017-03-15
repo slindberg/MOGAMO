@@ -15,9 +15,10 @@ outer_options = gaoptimset(...
 
 % x1: 'Generations'
 % x2: 'CrossoverFraction'
-lower_bound = [ 1 0 ];
-upper_bound = [ 400 100 ];
-integer_vars = [ 1 2 ];
+% x3: 'CrossoverFcn'
+lower_bound = [ 1 0 1 ];
+upper_bound = [ 400 100 6 ];
+integer_vars = [ 1 2 3 ];
 
 % The test_function_map var contains structs that describe a test problem
 for test_name = keys(test_function_map)
@@ -55,9 +56,26 @@ function fitness = evaluate_moga_fitness(pareto_cur, pareto_ideal)
 end
 
 function options = create_moga_options(x)
+    % Crossover method
+    switch x(3)
+        case 1
+            crossover_fn = @crossoverscattered;
+        case 2
+            crossover_fn = @crossoversinglepoint;
+        case 3
+            crossover_fn = @crossovertwopoint;
+        case 4
+            crossover_fn = @crossoverintermediate;
+        case 5
+            crossover_fn = @crossoverheuristic;
+        case 6
+            crossover_fn = @crossoverarithmetic;
+    end
+
     options = gaoptimset(...
         'Generations', x(1)*25, ...
         'CrossoverFraction', x(2)*0.01, ...
+        'CrossoverFcn', crossover_fn, ...
         'Vectorized', 'on', ...
         'Display', 'off' ...
     );
