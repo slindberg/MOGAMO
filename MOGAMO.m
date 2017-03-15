@@ -13,12 +13,11 @@ outer_options = gaoptimset(...
     'UseParallel', true ...
 );
 
-% x1: 'Generations'
-% x2: 'CrossoverFraction'
-% x3: 'CrossoverFcn'
-lower_bound = [ 1 0 1 ];
-upper_bound = [ 400 100 6 ];
-integer_vars = [ 1 2 3 ];
+% x1: 'CrossoverFraction'
+% x2: 'CrossoverFcn'
+lower_bound = [ 0 1 ];
+upper_bound = [ 100 6 ];
+integer_vars = [ 1 2 ];
 n_samples = 10;
 
 % The test_function_map var contains structs that describe a test problem
@@ -71,7 +70,7 @@ end
 
 function options = decode_moga_options(x)
     % Crossover method
-    switch x(3)
+    switch x(2)
         case 1
             crossover_fn = @crossoverscattered;
         case 2
@@ -87,8 +86,7 @@ function options = decode_moga_options(x)
     end
 
     options = struct(...
-        'Generations', x(1)*25, ...
-        'CrossoverFraction', x(2)*0.01, ...
+        'CrossoverFraction', x(1)*0.01, ...
         'CrossoverFcn', crossover_fn ...
     );
 end
