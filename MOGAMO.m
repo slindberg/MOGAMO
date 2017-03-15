@@ -34,8 +34,8 @@ for test_name = keys(test_function_map)
     x_best = ga(fn, 5, [], [], [], [], ...
         lower_bound, upper_bound, [], integer_vars, outer_options);
 
-    fprintf('Best options for %s:\n\n', test_name{1});
-    create_moga_options(x_best)
+    fprintf('\nBest options for %s:\n', test_name{1});
+    decode_moga_options(x_best)
 end
 
 function fitness = mogamo_objective(x, n_samples, test_obj, pareto_ideal)
@@ -62,6 +62,12 @@ function fitness = evaluate_moga_fitness(pareto_cur, pareto_ideal)
 end
 
 function options = create_moga_options(x)
+    options = gaoptimset(decode_moga_options(x));
+    options.Vectorized = 'on';
+    options.Display = 'off';
+end
+
+function options = decode_moga_options(x)
     % Crossover method
     switch x(3)
         case 1
@@ -78,11 +84,9 @@ function options = create_moga_options(x)
             crossover_fn = @crossoverarithmetic;
     end
 
-    options = gaoptimset(...
+    options = struct(...
         'Generations', x(1)*25, ...
         'CrossoverFraction', x(2)*0.01, ...
-        'CrossoverFcn', crossover_fn, ...
-        'Vectorized', 'on', ...
-        'Display', 'off' ...
+        'CrossoverFcn', crossover_fn ...
     );
 end
