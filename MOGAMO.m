@@ -19,6 +19,7 @@ outer_options = gaoptimset(...
 lower_bound = [ 1 0 1 ];
 upper_bound = [ 400 100 6 ];
 integer_vars = [ 1 2 3 ];
+n_samples = 10;
 
 % The test_function_map var contains structs that describe a test problem
 for test_name = keys(test_function_map)
@@ -28,7 +29,7 @@ for test_name = keys(test_function_map)
     filename = strcat('./data/pareto_', test_name{1}, '.mat');
     pareto_ideal = load(filename, '-ascii');
 
-    fn = @(x) mogamo_objective(x, test_obj, pareto_ideal);
+    fn = @(x) mogamo_objective(x, n_samples, test_obj, pareto_ideal);
 
     x_best = ga(fn, 5, [], [], [], [], ...
         lower_bound, upper_bound, [], integer_vars, outer_options);
@@ -37,13 +38,18 @@ for test_name = keys(test_function_map)
     create_moga_options(x_best)
 end
 
-function fitness = mogamo_objective(x, test_obj, pareto_ideal)
+function fitness = mogamo_objective(x, n_samples, test_obj, pareto_ideal)
     inner_options = create_moga_options(x);
+    fitness_sample = zeros(n_samples, 1);
 
-    [~, f_vals] = gamultiobj(test_obj.fn, test_obj.n, ...
-        [], [], [], [], test_obj.lb, test_obj.ub, inner_options);
+    for i_s = 1:n_samples
+        [~, f_vals] = gamultiobj(test_obj.fn, test_obj.n, ...
+            [], [], [], [], test_obj.lb, test_obj.ub, inner_options);
 
-    fitness = evaluate_moga_fitness(f_vals, pareto_ideal);
+        fitness_sample(i_s) = evaluate_moga_fitness(f_vals, pareto_ideal);
+    end
+
+    fitness = mean(fitness_sample);
 end
 
 function fitness = evaluate_moga_fitness(pareto_cur, pareto_ideal)
