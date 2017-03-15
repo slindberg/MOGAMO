@@ -34,7 +34,7 @@ for test_name = keys(test_function_map)
     % Define the maximum distance between two consecutive points in the
     % ideal pareto front to be two standard deviations above the mean
     % (this ensures a more uniform distribution)
-    neighbor_dists = sqrt(sum((pareto_full(2:end,:) - pareto_full(1:end-1,:)).^2, 2));
+    neighbor_dists = neighbor_distances(pareto_full);
     stats = regstats(1:length(neighbor_dists), neighbor_dists, 'linear');
     outlier_indices = find(stats.cookd > 100/length(neighbor_dists));
     neighbor_dists(outlier_indices,:) = [];
