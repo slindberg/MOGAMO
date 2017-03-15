@@ -1,6 +1,6 @@
 clear;
-
-run('../test_functions');
+addpath('../utils');
+run('./test_functions');
 
 mm_options = optimoptions('fgoalattain', ...
     'FunctionTolerance', 1e-20, ...
@@ -34,7 +34,7 @@ for test_name = keys(test_function_map)
     % Define the maximum distance between two consecutive points in the
     % ideal pareto front to be two standard deviations above the mean
     % (this ensures a more uniform distribution)
-    neighbor_dists = sqrt(sum((pareto_full(2:end,:) - pareto_full(1:end-1,:)).^2, 2));
+    neighbor_dists = neighbor_distances(pareto_full);
     stats = regstats(1:length(neighbor_dists), neighbor_dists, 'linear');
     outlier_indices = find(stats.cookd > 100/length(neighbor_dists));
     neighbor_dists(outlier_indices,:) = [];
@@ -69,10 +69,4 @@ for test_name = keys(test_function_map)
     % Save the data to be loaded later
     filename = strcat('../data/pareto_', test_name{1}, '.mat');
     save(filename, 'pareto_ideal', '-ascii', '-double');
-end
-
-function X_sorted = atan_sort(X_unsorted)
-    X_sorted = [ X_unsorted atan(X_unsorted(:,2)./X_unsorted(:,1)) ];
-    X_sorted = sortrows(X_sorted, 3);
-    X_sorted(:,3) = [];
 end

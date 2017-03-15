@@ -1,4 +1,4 @@
-addpath('./test_functions/');
+addpath('../test_functions/');
 
 % Mapping of test function names to structs that describe corresponding
 % optimization parameters

@@ -1,6 +1,6 @@
 clear;
 
-run('../test_functions');
+run('./test_functions');
 
 % Find the utopia point for each test problem
 for key = keys(test_function_map)
