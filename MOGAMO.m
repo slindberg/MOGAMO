@@ -31,8 +31,10 @@ for test_name = keys(test_function_map)
 
     fn = @(x) mogamo_objective(x, n_samples, test_obj, pareto_ideal);
 
+    tic
     x_best = ga(fn, 5, [], [], [], [], ...
         lower_bound, upper_bound, [], integer_vars, outer_options);
+    toc
 
     fprintf('\nBest options for %s:\n', test_name{1});
     decode_moga_options(x_best)
