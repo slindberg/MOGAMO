@@ -9,7 +9,8 @@ outer_options = gaoptimset(...
     'PopulationSize', 10, ...
     'PlotFcn', {@gaplotscores,@gaplotdistance,@gaplotselection, ...
         @gaplotscorediversity,@gaplotgenealogy}, ...
-    'Display', 'iter' ...
+    'Display', 'iter', ...
+    'UseParallel', true ...
 );
 
 % x1: 'Generations'
@@ -18,16 +19,15 @@ lower_bound = [ 1 0 ];
 upper_bound = [ 400 100 ];
 integer_vars = [ 1 2 ];
 
-% The gamultiobj_test_map var contains function handles that run the
-% gamultiobj() function for the test function with the given options
-for test_name = keys(gamultiobj_test_map)
-    test_fn = gamultiobj_test_map(test_name{1});
+% The test_function_map var contains structs that describe a test problem
+for test_name = keys(test_function_map)
+    test_obj = test_function_map(test_name{1});
 
     % Load ideal pareto front points
     filename = strcat('./data/pareto_', test_name{1}, '.mat');
     pareto_ideal = load(filename, '-ascii');
 
-    fn = @(x) mogamo_objective(x, test_fn, pareto_ideal);
+    fn = @(x) mogamo_objective(x, test_obj, pareto_ideal);
 
     x_best = ga(fn, 5, [], [], [], [], ...
         lower_bound, upper_bound, [], integer_vars, outer_options);
@@ -36,10 +36,11 @@ for test_name = keys(gamultiobj_test_map)
     create_moga_options(x_best)
 end
 
-function fitness = mogamo_objective(x, test_fn, pareto_ideal)
+function fitness = mogamo_objective(x, test_obj, pareto_ideal)
     inner_options = create_moga_options(x);
 
-    [~, f_vals] = test_fn(inner_options);
+    [~, f_vals] = gamultiobj(test_obj.fn, test_obj.n, ...
+        [], [], [], [], test_obj.lb, test_obj.ub, inner_options);
 
     fitness = evaluate_moga_fitness(f_vals, pareto_ideal);
 end
