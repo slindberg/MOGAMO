@@ -28,14 +28,3 @@ test_function_map = containers.Map(...
         ) ...
     } ...
 );
-
-% Create a mapping of test function name to function calling gamultiobj()
-% with the appropriate parameters
-gamultiobj_test_map = containers.Map();
-for key = keys(test_function_map)
-    test_obj = test_function_map(key{1});
-    gamultiobj_fn = @(options) gamultiobj(test_obj.fn, test_obj.n, ...
-        [], [], [], [], test_obj.lb, test_obj.ub, options);
-    gamultiobj_test_map(key{1}) = gamultiobj_fn;
-end
-clear key test_obj gamultiobj_fn;
