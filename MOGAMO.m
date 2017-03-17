@@ -4,20 +4,11 @@ addpath('./utils');
 % Create test function mappings
 run('./scripts/test_functions');
 
-outer_options = gaoptimset(...
-    'Generations', 60, ...
-    'PopulationSize', 20, ...
-    'PlotFcn', {@gaplotscores,@gaplotdistance,@gaplotselection, ...
-        @gaplotscorediversity,@gaplotgenealogy}, ...
-    'Display', 'iter', ...
-    'UseParallel', true ...
-);
-
+% Design variables
 % x1: 'CrossoverFraction'
 % x2: 'CrossoverFcn'
-lower_bound = [ 0 1 ];
-upper_bound = [ 100 6 ];
-integer_vars = [ 1 2 ];
+x_frac = 1:100; l_frac = length(x_frac);
+x_fnc = 1:6; l_fnc = length(x_fnc);
 n_samples = 50;
 
 % The test_function_map var contains structs that describe a test problem
@@ -28,13 +19,33 @@ for test_name = keys(test_function_map)
     filename = strcat('./data/pareto_', test_name{1}, '.mat');
     pareto_ideal = load(filename, '-ascii');
 
+    % Objective needs sample size, test object, and ideal pareto front
     fn = @(x) mogamo_objective(x, n_samples, test_obj, pareto_ideal);
 
+    % Run an exhaustive search on the 2-variable discretized space
     tic
-    x_best = ga(fn, 2, [], [], [], [], ...
-        lower_bound, upper_bound, [], integer_vars, outer_options);
+    results = zeros(l_fnc*l_frac, 3);
+    for i_fnc = x_fnc
+        fnc_result = zeros(length(x_frac), 3);
+        parfor i_frac = x_frac
+            x_k = [i_frac i_fnc];
+            f_k = fn(x_k);
+            fnc_result(i_frac,:) = [ x_k f_k ];
+            fprintf('x = (%.2f, %d), f = %.4f\n', ...
+                x_k(1)*0.01, x_k(2), f_k);
+        end
+        i_r = (i_fnc-1)*l_frac + 1;
+        results(i_r:(i_r+l_frac-1),:) = fnc_result;
+    end
     toc
 
+    % Save the results
+    filename = strcat('./results/', test_name{1}, '.mat');
+    save(filename, 'results', '-ascii', '-double');
+
+    % Find and print the best result
+    sorted_results = sortrows(results, 3);
+    x_best = sorted_results(1,1:2);
     fprintf('\nBest options for %s:\n', test_name{1});
     decode_moga_options(x_best)
 end
