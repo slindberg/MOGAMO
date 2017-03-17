@@ -5,21 +5,20 @@ addpath('./utils');
 run('./scripts/test_functions');
 
 outer_options = gaoptimset(...
-    'Generations', 5, ...
-    'PopulationSize', 10, ...
+    'Generations', 60, ...
+    'PopulationSize', 20, ...
     'PlotFcn', {@gaplotscores,@gaplotdistance,@gaplotselection, ...
         @gaplotscorediversity,@gaplotgenealogy}, ...
     'Display', 'iter', ...
     'UseParallel', true ...
 );
 
-% x1: 'Generations'
-% x2: 'CrossoverFraction'
-% x3: 'CrossoverFcn'
-lower_bound = [ 1 0 1 ];
-upper_bound = [ 400 100 6 ];
-integer_vars = [ 1 2 3 ];
-n_samples = 10;
+% x1: 'CrossoverFraction'
+% x2: 'CrossoverFcn'
+lower_bound = [ 0 1 ];
+upper_bound = [ 100 6 ];
+integer_vars = [ 1 2 ];
+n_samples = 50;
 
 % The test_function_map var contains structs that describe a test problem
 for test_name = keys(test_function_map)
@@ -32,7 +31,7 @@ for test_name = keys(test_function_map)
     fn = @(x) mogamo_objective(x, n_samples, test_obj, pareto_ideal);
 
     tic
-    x_best = ga(fn, 5, [], [], [], [], ...
+    x_best = ga(fn, 2, [], [], [], [], ...
         lower_bound, upper_bound, [], integer_vars, outer_options);
     toc
 
@@ -71,7 +70,7 @@ end
 
 function options = decode_moga_options(x)
     % Crossover method
-    switch x(3)
+    switch x(2)
         case 1
             crossover_fn = @crossoverscattered;
         case 2
@@ -87,8 +86,7 @@ function options = decode_moga_options(x)
     end
 
     options = struct(...
-        'Generations', x(1)*25, ...
-        'CrossoverFraction', x(2)*0.01, ...
+        'CrossoverFraction', x(1)*0.01, ...
         'CrossoverFcn', crossover_fn ...
     );
 end
