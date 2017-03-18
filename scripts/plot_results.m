@@ -10,7 +10,7 @@ for test_name = keys(test_function_map)
     
     x_frac = 0:100; l_frac = length(x_frac);
     x_fnc = 1:6; l_fnc = length(x_fnc);
-    y_max = max(results(:,3));
+    y_max = mean(results(:,3)) + 3*std(results(:,3));
     figure('Name', test_name{1});
 
     for i_fnc = x_fnc
@@ -26,8 +26,9 @@ for test_name = keys(test_function_map)
             'LineStyle', 'none');
         title(crossover_fnc_label(i_fnc));
         xlabel('Crossover Fraction');
-        ylabel('Meta Objective');
+        ylabel('f_{meta}');
         ylim([0 y_max]);
+        pbaspect([3 1 1])
     end
 end
 
