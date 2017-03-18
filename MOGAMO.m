@@ -7,7 +7,7 @@ run('./scripts/test_functions');
 % Design variables
 % x1: 'CrossoverFraction'
 % x2: 'CrossoverFcn'
-x_frac = 1:100; l_frac = length(x_frac);
+x_frac = 0:100; l_frac = length(x_frac);
 x_fnc = 1:6; l_fnc = length(x_fnc);
 n_samples = 50;
 
@@ -30,7 +30,7 @@ for test_name = keys(test_function_map)
         parfor i_frac = x_frac
             x_k = [i_frac i_fnc];
             f_k = fn(x_k);
-            fnc_result(i_frac,:) = [ x_k f_k ];
+            fnc_result(i_frac+1,:) = [ x_k f_k ];
             fprintf('x = (%.2f, %d), f = %.4f\n', ...
                 x_k(1)*0.01, x_k(2), f_k);
         end
