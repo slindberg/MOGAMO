@@ -8,7 +8,7 @@ for test_name = keys(test_function_map)
     filename = strcat('../results/', test_name{1}, '.mat');
     results = load(filename, '-ascii');
     
-    x_frac = 1:100; l_frac = length(x_frac);
+    x_frac = 0:100; l_frac = length(x_frac);
     x_fnc = 1:6; l_fnc = length(x_fnc);
     y_max = max(results(:,3));
     figure('Name', test_name{1});
